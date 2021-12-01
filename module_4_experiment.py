@@ -11,9 +11,9 @@ from datetime import datetime
 # Config
 
 #make sure exactly one of these is true
-IS_CONTROL_EXPERIMENT = False
+IS_CONTROL_EXPERIMENT = True
 IS_CHANT_EXP = False
-IS_LVL_EXP = True # voice level exp
+IS_LVL_EXP = False # voice level exp
 
 INITIAL_TAP_THRESHOLD = 0.010
 FORMAT = pyaudio.paInt16 
@@ -199,18 +199,18 @@ while(x1 < 90 and x2 < 130):
         diff = (new - old).total_seconds()
 
         if(amplitude < 10):
-            delX1 = 5
+            delX1 = 3
         elif(amplitude < 20):
-            delX1 = 7
+            delX1 = 5
         elif(amplitude < 50):
-            delX1 = 20
+            delX1 = 10
         elif(amplitude < 100):
-            delX1 = 30
+            delX1 = 15
         else:
-            delX1 = 35
+            delX1 = 20
 
         if IS_LVL_EXP:
-            lvl_increase_1 = min(250,amplitude * 5)
+            lvl_increase_1 = min(450,amplitude * 5)
             lvl_increase_2 = np.random.normal(230, max(0,50))
         else:
             lvl_increase_1 = 0
