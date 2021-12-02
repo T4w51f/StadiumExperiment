@@ -7,13 +7,37 @@ import pyaudio
 import sys
 import struct
 from datetime import datetime
+import argparse
 
+#parse args
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--type', type=str, required=True) # control, exp1, exp2
+parser.add_argument('--write', dest='write', action='store_true')
+parser.add_argument('--no-write', dest='write', action='store_false')
+parser.set_defaults(write=True)
+
+# Parse the argument
+args = parser.parse_args()
 # Config
 
-#make sure exactly one of these is true
-IS_CONTROL_EXPERIMENT = True
+IS_CONTROL_EXPERIMENT = False
 IS_CHANT_EXP = False
 IS_LVL_EXP = False # voice level exp
+
+#make sure exactly one of these is true
+if args.type == 'control':
+
+    IS_CONTROL_EXPERIMENT = True
+elif args.type == 'exp1':
+
+    IS_CHANT_EXP = True
+elif args.type == 'exp2':
+
+    IS_LVL_EXP = True # voice level exp
+else:
+    exit('no type defined')
 
 INITIAL_TAP_THRESHOLD = 0.010
 FORMAT = pyaudio.paInt16 
@@ -35,8 +59,10 @@ screen.bgcolor("black")
 screen.tracer(0)
 screen.bgpic('bgd.png')
 
-f = open("distraction_data.txt", "a")
-f.write(f'\nExperiment at {datetime.now()}\n')
+if args.write:
+
+    f = open("distraction_data.txt", "a")
+    f.write(f'\nExperiment at {datetime.now()}\n')
 
 def makeTurtle(shape, color, shapesizeX, shapesizeY, posX, posY):
     t = turtle.Turtle()
@@ -105,7 +131,7 @@ if IS_LVL_EXP:
     bar2 = makeTurtle(heatmap, 'white', 30, 9, 350, 50)
     level1 = makeTurtle('square', 'red', 0.5, 1.7, -703, -70)
     level2 = makeTurtle('square', 'blue', 0.5, 1.7, 347, -70)
-    level3 = makeTurtle('square', 'blue', 0.5, 1.7, 600, 230)
+    #level3 = makeTurtle('square', 'blue', 0.5, 1.7, 600, 230) #used to test height value (ignore)
 
 else:
     level1 = makeTurtle('square', 'red', 0.5, 1, 450, -145)
@@ -167,7 +193,7 @@ def updateBeep(coor, t, old):
 user_timer_start = -1
 def store_user_timer():
     global user_timer_start
-    if(user_timer_start != -1):
+    if(user_timer_start != -1) and args.write:
         f.write(f'{(datetime.now() - user_timer_start).total_seconds()}\n')
 
 started = False
@@ -264,9 +290,12 @@ else:
 
 status.clear()
 status.write(score_string, align="center", font=("Arial", 24, "normal"))
-f.write(f"number of times shown : {num_shown}\n")
+if args.write:
+    f.write(f"number of times shown : {num_shown}\n")
 # screen.mainloop()
 
 time.sleep(3)
-f.write(f'Status: {score_string}\n')
-f.close()
+if args.write:
+
+    f.write(f'Status: {score_string}\n')
+    f.close()
