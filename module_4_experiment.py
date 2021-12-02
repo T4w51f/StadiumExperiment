@@ -20,6 +20,7 @@ parser.set_defaults(write=True)
 
 # Parse the argument
 args = parser.parse_args()
+
 # Config
 
 IS_CONTROL_EXPERIMENT = False
